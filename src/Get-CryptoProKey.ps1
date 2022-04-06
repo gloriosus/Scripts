@@ -15,11 +15,11 @@ foreach ($product in $products)
 
         if ($properties.DisplayName -eq "КриптоПро CSP")
         {
-            $result = "$($properties.DisplayName) v.$($properties.Version): $($properties.ProductId)"
+            $result = "$($properties.DisplayName) v.$($properties.DisplayVersion): $($properties.ProductId)"
 
             switch ($outputMethod) 
             {
-                "file" { $result | Out-File -FilePath "$($PWD)\CryptoPro $($properties.Version) ProductId.txt" }
+                "file" { $result | Out-File -FilePath "$($PWD)\CryptoPro $($properties.DisplayVersion) ProductId.txt" }
                 "console" { Write-Host $result }
                 default { Write-Host $result }
             }
