@@ -1,7 +1,8 @@
 # Based on the instruction: https://support.microsoft.com/en-us/office/manually-uninstall-office-4e2904ea-25c8-4544-99ee-17696bb3027b?ui=en-us&rs=en-us&ad=us#OfficeVersion=Office_2010
 
-# Change to absolute path
-. ".\src\Utility.ps1"
+$RootFolder = (Split-Path -Path $PSScriptRoot -Parent)
+
+Import-Module -Name "$($RootFolder)\Modules\Jarnet.PowerShell.Utility"
 
 $Processes = @(
 	"EXCEL",
@@ -19,8 +20,7 @@ $Services = @(
 	"ose64"
 )
 
-$UsernameDomain = $(Get-WMIObject -Class Win32_ComputerSystem | Select-Object Username).Username
-$Username = $UsernameDomain.Split('\')[1]
+$UserName = (Get-CimInstance -Class Win32_ComputerSystem).UserName.Split('\')[1]
 
 $Paths = @(
 	"C:\Program Files (x86)\Common Files\Microsoft Shared\Office14",
@@ -30,8 +30,8 @@ $Paths = @(
 	"C:\Program Files\Common Files\Microsoft Shared\Source Engine",
 	"C:\Program Files\Microsoft Office\Office14",
 	"C:\MSOCache\All Users\*0FF1CE}-*",
-	"C:\Users\$($Username)\AppData\Roaming\Microsoft\Templates\Normal.dotm",
-	"C:\Users\$($Username)\AppData\Roaming\Microsoft\Document Building Blocks\*.dotx",
+	"C:\Users\$($UserName)\AppData\Roaming\Microsoft\Templates\Normal.dotm",
+	"C:\Users\$($UserName)\AppData\Roaming\Microsoft\Document Building Blocks\*.dotx",
 	"C:\ProgramData\Application Data\Microsoft\Office\Data\opa14.dat",
 	"Registry::HKEY_CURRENT_USER\Software\Microsoft\Office\14.0",
 	"Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Office\14.0",
@@ -54,19 +54,13 @@ $Paths = @(
 	"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Microsoft Office"
 )
 
-$PathsExpressions = @(
-	@{
-		Path = "Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall"; 
-		Expression = '{$_.UninstallString -Like "*\Office Setup Controller\Setup.exe*"}'
-	},
-	@{
-		Path = "Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall"; 
-		Expression = '{$_.UninstallString -Like "*\Office Setup Controller\Setup.exe*"}'
-	}
+$UninstallPath = @(
+	"Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall",
+	"Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall"
 )
 
-Close-Processes $Processes | Wait-Process -Timeout 30 -ErrorAction Ignore
-Uninstall-Products "(Microsoft Office)(.*)(2010)(.*)"
-Remove-Services $Services
-Remove-Paths $Paths
-Remove-PathsWithExpression $PathsExpressions
+Stop-Process -Name $Processes -Force -ErrorAction SilentlyContinue | Wait-Process -Timeout 30
+Uninstall-Product -Pattern "(Microsoft Office)(.*)(2010)(.*)"
+Remove-ScService -Name $Services -Timeout 30 -ErrorAction SilentlyContinue
+Remove-Item -Path $Paths -Recurse -Force -ErrorAction SilentlyContinue
+Get-ChildItemWhere -Path $UninstallPath -Where "{ `$_.UninstallString -like `"*\Office Setup Controller\Setup.exe*`" }" | Remove-Item -ErrorAction SilentlyContinue
