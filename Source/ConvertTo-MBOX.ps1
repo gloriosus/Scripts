@@ -1,4 +1,6 @@
-﻿. ".\Utility.ps1"
+﻿$RootFolder = (Split-Path -Path $PSScriptRoot -Parent)
+
+Import-Module -Name "$($RootFolder)\Modules\Jarnet.PowerShell.Utility"
 
 $Processes = @(
 	"organizer"
@@ -36,10 +38,6 @@ if (Test-Path "C:\Users\$($Username)\AppData\Roaming\Organizer\Profiles\$($Usern
 	Exit
 }
 
-$Trigger = New-ScheduledTaskTrigger -Once -At (Get-Date "1999-01-01 00:00")
-$Action = New-ScheduledTaskAction -Execute ".\show-popup.vbs"
-Register-ScheduledTask -TaskName "Show-Popup" -Trigger $Trigger -User $DomainWithUsername -Action $Action -ErrorAction SilentlyContinue
-
 $SystemType = (Get-CimInstance -ClassName Win32_ComputerSystem).SystemType
 $SystemType -Match "x(?<arch>64|86)-based PC"
 $Arch = $Matches.arch
@@ -58,15 +56,4 @@ if (Test-Path "C:\Users\$($Username)\AppData\Local\Microsoft\Outlook\*.pst") {
 	}
 }
 
-Start-ScheduledTask -TaskName "Show-Popup" -ErrorAction SilentlyContinue
-
-$Timeout = 60
-$Timer = [Diagnostics.Stopwatch]::StartNew()
-
-while (((Get-ScheduledTask -TaskName "Show-Popup").State -Ne "Ready") -And ($Timer.Elapsed.TotalSeconds -Lt $Timeout)) {
-	Write-Verbose -Message "Ожидание завершения выполнения задания..."
-	Start-Sleep -Seconds 5.0
-}
-
-$Timer.Stop()
-Unregister-ScheduledTask -TaskName "Show-Popup" -Confirm:$false -ErrorAction SilentlyContinue
+Start-ProcessAsUser -FilePath "$($RootFolder)\Launch\show-popup.vbs" -Argument "Операция конвертации архивов почты завершена. Проверьте наличие архива в Р7-Органайзер" -UserName $DomainWithUsername -ErrorAction SilentlyContinue
