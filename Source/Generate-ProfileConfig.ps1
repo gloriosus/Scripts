@@ -1,5 +1,5 @@
-$UsernameDomain = $(Get-WMIObject -Class Win32_ComputerSystem | Select-Object Username).Username
-$Username = $UsernameDomain.Split('\')[1]
+$DomainWithUsername = (Get-CimInstance -Class Win32_ComputerSystem).Username
+$Username = $DomainWithUsername.Split('\')[1]
 $File = "C:\Users\$($Username)\AppData\Roaming\Organizer\Profiles\$($Username).default\prefs.js"
 
 $Filter = "(&(objectCategory=User)(samAccountName=$Username))"

@@ -1,9 +1,9 @@
-﻿# Added '-ErrorAction Ignore' just to be sure that Kaspersky will not mark the task as failed
+﻿# Added '-ErrorAction SilentlyContinue' just to be sure that Kaspersky will not mark the task as failed
 
 function Close-Processes($processes){
     $result = @()
 	foreach ($process in $processes){
-		$foundProcess = Get-Process -ProcessName $process -ErrorAction Ignore
+		$foundProcess = Get-Process -ProcessName $process -ErrorAction SilentlyContinue
         $result += $foundProcess
 		if ($foundProcess){
 			Stop-Process $foundProcess -Force
@@ -14,7 +14,7 @@ function Close-Processes($processes){
 
 function Remove-Services($services){
     foreach ($service in $services){
-        $foundService = Get-Service -Name $service -ErrorAction Ignore
+        $foundService = Get-Service -Name $service -ErrorAction SilentlyContinue
         if ($foundService){
             Stop-Service $foundService -Force
             sc.exe delete $service
@@ -33,7 +33,7 @@ function Remove-Paths($paths){
     foreach ($path in $paths){
         $isExists = Test-Path $path
         if ($isExists){
-            Remove-Item -Path $path -Recurse -Force -ErrorAction Ignore
+            Remove-Item -Path $path -Recurse -Force -ErrorAction SilentlyContinue
         }
     }
 }
@@ -49,7 +49,7 @@ function Remove-PathsWithExpression($pathsExpressions){
 
 function Remove-ScheduledTasks($scheduledTasks){
     foreach ($task in $scheduledTasks){
-        $foundTask = Get-ScheduledTask -TaskName $task -ErrorAction Ignore
+        $foundTask = Get-ScheduledTask -TaskName $task -ErrorAction SilentlyContinue
         if ($foundTask){
             Unregister-ScheduledTask -TaskName $task -Confirm:$false
         }
