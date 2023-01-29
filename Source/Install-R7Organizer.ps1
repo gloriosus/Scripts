@@ -29,6 +29,7 @@ if ($Msvc86.Length -eq 0){
 }
 
 New-Item -Path "Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\R7Organizer" -Force
+Set-ItemProperty -Path "Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\R7Organizer" -Name "DisplayIcon" -Value "C:\Program Files\R7-Office\organizer\chrome\icons\default\messengerWindow.ico" -Force
 Set-ItemProperty -Path "Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\R7Organizer" -Name "DisplayName" -Value "Р7-Органайзер" -Force
 Set-ItemProperty -Path "Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\R7Organizer" -Name "DisplayVersion" -Value $VersionNumber -Force
 Set-ItemProperty -Path "Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\R7Organizer" -Name "Publisher" -Value "r7office.ru" -Force
