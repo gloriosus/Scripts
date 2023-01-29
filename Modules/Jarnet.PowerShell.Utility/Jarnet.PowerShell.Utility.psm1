@@ -12,3 +12,4 @@ foreach($import in @($Public + $Private)) {
 
 Export-ModuleMember -Function "Start-ProcessAsUser"
 Export-ModuleMember -Function "Disable-CloseButton"
+Export-ModuleMember -Function "Get-ChildItemWhere"
