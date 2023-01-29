@@ -1,0 +1,1 @@
+powershell -noprofile -executionpolicy bypass -file ..\Source\Get-CryptoProKey.ps1

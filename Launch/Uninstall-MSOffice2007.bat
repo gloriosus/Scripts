@@ -1,0 +1,1 @@
+powershell -noprofile -executionpolicy bypass -file ..\Source\Uninstall-MSOffice2007.ps1
