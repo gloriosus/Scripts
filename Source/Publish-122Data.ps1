@@ -85,7 +85,7 @@ try {
     $YandexDriver.FindElement([OpenQA.Selenium.By]::CssSelector("[aria-label=`"Информирование о вакцинации против COVID-19`"]")).Click()
 
     # Submit the form
-    $YandexDriver.FindElement([OpenQA.Selenium.By]::XPath("/html/body/div[1]/div/div[2]/main/div/form/div/div[5]/button[3]")).Click()
+    $YandexDriver.FindElement([OpenQA.Selenium.By]::XPath("/html/body/div[1]/div/div[2]/main/div/form/div/div[6]/button[3]")).Click()
 
     Start-Sleep -Seconds 5
     $YandexDriver.Navigate().GoToUrl("https://scmks.ru/treatment/table")
