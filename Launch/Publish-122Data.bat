@@ -1,0 +1,1 @@
+powershell -noprofile -executionpolicy bypass -file ..\Source\Publish-122Data.ps1
