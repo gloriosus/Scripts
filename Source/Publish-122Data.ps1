@@ -96,6 +96,8 @@ try {
     $Screenshot = ([OpenQA.Selenium.ITakesScreenshot]$YandexDriver).GetScreenshot()
     $Screenshot.SaveAsFile("$($LogPath)\$($CurrentDate)\result.jpg", [OpenQA.Selenium.ScreenshotImageFormat]::Jpeg)
 
+    New-Item -Path "$($LogPath)\$($CurrentDate)\exception.log" -Force
+
     $YandexDriver.Close()
     $YandexDriver.Quit()
 
@@ -105,6 +107,8 @@ try {
 
     New-Item -Path "$($LogPath)\$($CurrentDate)" -ItemType Directory -Force
     Write-Output $_.Exception.Message | Out-File -FilePath "$($LogPath)\$($CurrentDate)\exception.log" -Encoding utf8BOM
+
+    New-Item -Path "$($LogPath)\$($CurrentDate)\result.jpg" -Force
 
     $Result = "Провал"
 } finally {
