@@ -7,8 +7,8 @@ $Username = $Config.Username
 $Password = $Config.Password
 $SmtpServer = $Config.SmtpServer
 $SmtpPort = $Config.SmtpPort
-$SmtpUser = $Config.SmtpUser
-$SmtpPassword = $Config.SmtpPassword
+[string]$SmtpUser = $Config.SmtpUser
+[securestring]$SmtpPassword = ConvertTo-SecureString $Config.SmtpPassword -AsPlainText -Force
 $SenderEmail = $Config.SenderEmail
 $MailList = $Config.MailList
 
@@ -113,6 +113,6 @@ try {
     $Result = "Провал"
 } finally {
     $CurrentDate = (Get-Date).ToString("yyyy-MM-dd")
-    $Credential = New-Object System.Management.Automation.PSCredential -ArgumentList $SmtpUser, $SmtpPassword
+    [PSCredential]$Credential = New-Object System.Management.Automation.PSCredential -ArgumentList $SmtpUser, $SmtpPassword
     Send-MailMessage -From "Отчет 122 <$($SenderEmail)>" -To $MailList -Subject "Операция 122: $($Result)" -Body "Операция завершена $(Get-Date)." -Attachments "$($LogPath)\$($CurrentDate)\result.jpg", "$($LogPath)\$($CurrentDate)\exception.log" -Encoding UTF8 -SmtpServer $SmtpServer -Port $SmtpPort -Credential $Credential
 }
