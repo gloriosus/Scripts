@@ -106,7 +106,7 @@ try {
     $CurrentDate = (Get-Date).ToString("yyyy-MM-dd")
 
     New-Item -Path "$($LogPath)\$($CurrentDate)" -ItemType Directory -Force
-    Write-Output $_.Exception.Message | Out-File -FilePath "$($LogPath)\$($CurrentDate)\exception.log" -Encoding utf8BOM
+    Write-Output $_.Exception.Message | Out-File -FilePath "$($LogPath)\$($CurrentDate)\exception.log" -Encoding UTF8
 
     New-Item -Path "$($LogPath)\$($CurrentDate)\result.jpg" -Force
 
@@ -114,5 +114,5 @@ try {
 } finally {
     $CurrentDate = (Get-Date).ToString("yyyy-MM-dd")
     $Credential = New-Object System.Management.Automation.PSCredential -ArgumentList $SmtpUser, $SmtpPassword
-    Send-MailMessage -From "Отчет 122 <$($SenderEmail)>" -To $MailList -Subject "Операция 122: $($Result)" -Body "Операция завершена $(Get-Date)." -Attachments "$($LogPath)\$($CurrentDate)\result.jpg", "$($LogPath)\$($CurrentDate)\exception.log" -Encoding utf8BOM -SmtpServer $SmtpServer -Port $SmtpPort -Credential $Credential
+    Send-MailMessage -From "Отчет 122 <$($SenderEmail)>" -To $MailList -Subject "Операция 122: $($Result)" -Body "Операция завершена $(Get-Date)." -Attachments "$($LogPath)\$($CurrentDate)\result.jpg", "$($LogPath)\$($CurrentDate)\exception.log" -Encoding UTF8 -SmtpServer $SmtpServer -Port $SmtpPort -Credential $Credential
 }
