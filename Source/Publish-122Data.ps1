@@ -41,7 +41,14 @@ try {
     Start-Sleep -Seconds 5
     # Set date and select System Type from dropdown menu
     $YandexDriver.FindElement([OpenQA.Selenium.By]::CssSelector("[aria-label=`"Отчетная дата`"]")).Click()
+
+    if ((Get-Date).Day -eq "1") {
+        $YandexDriver.FindElement([OpenQA.Selenium.By]::XPath("/html/body/div[3]/div/div/div/div[2]/div[1]/div/div[1]/div[1]/button")).Click()
+        Start-Sleep -Seconds 2
+    }
+
     $YandexDriver.FindElement([OpenQA.Selenium.By]::CssSelector("[class=`"q-btn q-btn-item non-selectable no-outline q-btn--flat q-btn--rectangle q-btn--actionable q-focusable q-hoverable q-btn--dense`"]")).Click()
+    
     $YandexDriver.FindElement([OpenQA.Selenium.By]::XPath("/html/body/div[1]/div/div[2]/main/div/form/div/div[2]/div[2]/div[2]/label/div/div[1]/div[2]/div[1]")).Click()
     Start-Sleep -Seconds 3
     $YandexDriver.FindElement([OpenQA.Selenium.By]::XPath("/html/body/div[3]/div/div[2]/div[3]/div[2]")).Click()
