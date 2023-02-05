@@ -56,4 +56,4 @@ if (Test-Path "C:\Users\$($UserName)\AppData\Local\Microsoft\Outlook\*.pst") {
 	}
 }
 
-Start-ProcessAsUser -FilePath "$($RootFolder)\Launch\show-popup.vbs" -Argument "Операция конвертации архивов почты завершена. Проверьте наличие архива в Р7-Органайзер" -UserName $FullUserName -ErrorAction SilentlyContinue
+Start-ProcessAsUser -FilePath "$($RootFolder)\Launch\show-popup.vbs" -Argument "`"Операция конвертации архивов почты завершена. Проверьте наличие архива в Р7-Органайзер`"" -UserName $FullUserName -ErrorAction SilentlyContinue
