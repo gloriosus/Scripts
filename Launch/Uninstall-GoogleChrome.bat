@@ -1,0 +1,1 @@
+powershell -noprofile -executionpolicy bypass -file ..\Source\Uninstall-GoogleChrome.ps1
