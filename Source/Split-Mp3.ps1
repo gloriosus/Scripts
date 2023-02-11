@@ -1,4 +1,14 @@
-Set-Location -Path $args[0]
+$Location = $args[0]
+
+if ($null -eq $Location) {
+    $Location = Read-Host "Specify location of a playlist"
+}
+
+while (-not (Test-Path -Path $Location)) {
+    $Location = Read-Host "Please, specify the correct location of a playlist"
+}
+
+Set-Location -Path $Location
 
 $Playlist = Get-Content ".\playlist.csv" | ConvertFrom-Csv -Delimiter ";"
 
