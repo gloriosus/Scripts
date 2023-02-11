@@ -31,5 +31,5 @@ foreach ($Track in $Playlist) {
 
     Invoke-Command { ffmpeg -ss $Seek -y -i ".\playlist.mp3" -t $Duration -c:a libmp3lame -b:a 320k -metadata track="$($Track.Track)" -metadata artist="$($Track.Artist)" -metadata title="$($Track.Title)" -metadata album="$($Track.Album)" -metadata date="$($Track.Year)" ".\$TrackNumber. $($Track.Artist) - $($Track.Title) - $($Track.Album).mp3" }
 
-    $Seek = $Duration
+    $Seek += $Duration
 }
