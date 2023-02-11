@@ -27,7 +27,7 @@ $Seek = 0
 
 foreach ($Track in $Playlist) {
     $TrackNumber = "{0:d2}" -f [int]$Track.Track
-    $Duration = ([TimeSpan]$Track.Duration).TotalSeconds
+    $Duration = [TimeSpan]::ParseExact($Track.Duration, "mm\:ss", [CultureInfo]::InvariantCulture).TotalSeconds
 
     Invoke-Command { ffmpeg -ss $Seek -y -i ".\playlist.mp3" -t $Duration -c:a libmp3lame -b:a 320k -metadata track="$($Track.Track)" -metadata artist="$($Track.Artist)" -metadata title="$($Track.Title)" -metadata album="$($Track.Album)" -metadata date="$($Track.Year)" ".\$TrackNumber. $($Track.Artist) - $($Track.Title) - $($Track.Album).mp3" }
 
