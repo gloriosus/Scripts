@@ -1,4 +1,4 @@
-$RootFolder = (Split-Path -Path $PSScriptRoot -Parent)
+﻿$RootFolder = (Split-Path -Path $PSScriptRoot -Parent)
 
 Import-Module -Name "$($RootFolder)\Modules\Jarnet.PowerShell.Utility"
 
@@ -18,14 +18,14 @@ $UninstallString -Match "(?<base>.*)--verbose-logging"
 $UninstallString = $Matches.base + "--force-uninstall"
 $UninstallString -Match "(?<path>`".*`")\s(?<args>.*)"
 
-Remove-ScService -Name "GoogleChromeElevationService" -Timeout 30
+Remove-ScService -Name "GoogleChromeElevationService", "gupdate", "gupdatem" -Timeout 30
 Stop-Process -Name "setup", "chrome", "GoogleUpdate" -Force -ErrorAction SilentlyContinue | Wait-Process -Timeout 30
 Start-Process -FilePath $Matches.path -ArgumentList $Matches.args -ErrorAction SilentlyContinue | Wait-Process -Timeout 180
-Unregister-ScheduledTask -TaskName "GoogleUpdateTask*"
+Unregister-ScheduledTask -TaskName "GoogleUpdateTask*" -Confirm:$false -ErrorAction SilentlyContinue
 
 $UserName = (Get-CimInstance -Class Win32_ComputerSystem).UserName.Split('\')[1]
 $Sid = (Get-ChildItem -Path "Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList" | Get-ItemProperty | Where-Object ProfileImagePath -like "*$($UserName)").PSChildName
-Get-ChildItem -Path "Registry::HKEY_USERS\$($Sid)\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall" | Get-ItemProperty | Where-Object (DisplayName -eq "Презентация") -or (DisplayName -eq "YouTube") -or (DisplayName -eq "Gmail") -or (DisplayName -eq "Документы") -or (DisplayName -eq "Таблица") -or (DisplayName -eq "Google Диск") | Select-Object PSPath | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
+Get-ChildItem -Path "Registry::HKEY_USERS\$($Sid)\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall" | Get-ItemProperty | Where-Object {(($_.DisplayName -eq "Презентация") -or ($_.DisplayName -eq "YouTube") -or ($_.DisplayName -eq "Gmail") -or ($_.DisplayName -eq "Документы") -or ($_.DisplayName -eq "Таблица") -or ($_.DisplayName -eq "Google Диск"))} | Select-Object PSPath | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
 
 $Paths = @(
     "C:\Program Files\Google",
