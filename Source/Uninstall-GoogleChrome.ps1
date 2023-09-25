@@ -1,41 +1,39 @@
-﻿$RootFolder = (Split-Path -Path $PSScriptRoot -Parent)
+﻿$Path = "C:\Program Files\Google\Chrome\Application"
+$AltPath = "C:\Program Files (x86)\Google\Chrome\Application"
 
-Import-Module -Name "$($RootFolder)\Modules\Jarnet.PowerShell.Utility"
+Stop-Process -Name "setup", "chrome", "GoogleUpdate" -Force -ErrorAction SilentlyContinue | Wait-Process -Timeout 30
 
-$SystemType = (Get-CimInstance -ClassName Win32_ComputerSystem).SystemType
-$SystemType -Match "x(?<arch>64|86)-based PC"
-$Arch = $Matches.arch
+if (Test-Path -Path $Path) {
+    Get-ChildItem -Path $Path -Attributes Directory | Where-Object { $_.Name -Match "(?>\d+\.*){4}" }
 
-$RegistryPath = "Registry::HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall"
+    if ($Matches.Count -gt 0) {
+        Start-Process -FilePath "$($Path)\$($Matches[0])\Installer\setup.exe" -ArgumentList "--uninstall --channel=stable --system-level --force-uninstall" -ErrorAction SilentlyContinue | Wait-Process -Timeout 180
+    }
 
-if ($Arch -eq "86") {
-    $RegistryPath = "Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall"
+    Clear-Variable -Name "Matches"
 }
 
-$GoogleChromePath = (Get-ChildItem -Path $RegistryPath | Get-ItemProperty | Where-Object DisplayName -like "*Google Chrome*").PSPath
-$UninstallString = (Get-ItemProperty -Path $GoogleChromePath).UninstallString
-$UninstallString -Match "(?<base>.*)--verbose-logging"
-$UninstallString = $Matches.base + "--force-uninstall"
-$UninstallString -Match "(?<path>`".*`")\s(?<args>.*)"
+if (Test-Path -Path $AltPath) {
+    Get-ChildItem -Path $AltPath -Attributes Directory | Where-Object { $_.Name -Match "(?>\d+\.*){4}" }
 
-Remove-ScService -Name "GoogleChromeElevationService", "gupdate", "gupdatem" -Timeout 30
-Stop-Process -Name "setup", "chrome", "GoogleUpdate" -Force -ErrorAction SilentlyContinue | Wait-Process -Timeout 30
-Start-Process -FilePath $Matches.path -ArgumentList $Matches.args -ErrorAction SilentlyContinue | Wait-Process -Timeout 180
-Unregister-ScheduledTask -TaskName "GoogleUpdateTask*" -Confirm:$false -ErrorAction SilentlyContinue
+    if ($Matches.Count -gt 0) {
+        Start-Process -FilePath "$($AltPath)\$($Matches[0])\Installer\setup.exe" -ArgumentList "--uninstall --channel=stable --system-level --force-uninstall" -ErrorAction SilentlyContinue | Wait-Process -Timeout 180
+    }
+}
 
-$UserName = (Get-CimInstance -Class Win32_ComputerSystem).UserName.Split('\')[1]
-$Sid = (Get-ChildItem -Path "Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList" | Get-ItemProperty | Where-Object ProfileImagePath -like "*$($UserName)").PSChildName
+$Username = (Get-CimInstance -Class Win32_ComputerSystem).Username.Split('\')[1]
+$Sid = (Get-ChildItem -Path "Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList" | Get-ItemProperty | Where-Object ProfileImagePath -like "*$($Username)").PSChildName
 Get-ChildItem -Path "Registry::HKEY_USERS\$($Sid)\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall" | Get-ItemProperty | Where-Object {(($_.DisplayName -eq "Презентация") -or ($_.DisplayName -eq "YouTube") -or ($_.DisplayName -eq "Gmail") -or ($_.DisplayName -eq "Документы") -or ($_.DisplayName -eq "Таблица") -or ($_.DisplayName -eq "Google Диск"))} | Select-Object PSPath | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
 
-$Paths = @(
+$AdditionalPaths = @(
     "C:\Program Files\Google",
     "C:\Program Files (x86)\Google",
     "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Google Chrome.lnk",
-    "C:\Users\$($UserName)\AppData\Local\Google",
-    "C:\Users\$($UserName)\AppData\Roaming\Microsoft\Internet Explorer\Quick Launch\Google Chrome.lnk",
-    "C:\Users\$($UserName)\AppData\Roaming\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar\Google Chrome.lnk",
-    "C:\Users\$($UserName)\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Приложения Chrome",
+    "C:\Users\$($Username)\AppData\Local\Google",
+    "C:\Users\$($Username)\AppData\Roaming\Microsoft\Internet Explorer\Quick Launch\Google Chrome.lnk",
+    "C:\Users\$($Username)\AppData\Roaming\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar\Google Chrome.lnk",
+    "C:\Users\$($Username)\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Приложения Chrome",
     "C:\Users\Public\Desktop\Google Chrome.lnk"
 )
 
-Remove-Item -Path $Paths -Recurse -Force -ErrorAction SilentlyContinue
+Remove-Item -Path $AdditionalPaths -Recurse -Force -ErrorAction SilentlyContinue
